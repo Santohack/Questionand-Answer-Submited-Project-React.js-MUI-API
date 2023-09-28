@@ -1,24 +1,49 @@
-import logo from './logo.svg';
-import './App.css';
+import { Card, Divider, Stack } from "@mui/material";
+import QuestionList from "./components/QuestionList";
+import Header from "./components/Header";
+import FormArea from "./components/FormArea";
+import SubmittedAnswer from "./components/SubmittedAnswer";
+import { useEffect, useState } from "react";
+import { useQuestionList } from "./apis/useFetchQuestionList";
+
 
 function App() {
+  const { data } = useQuestionList();
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
+
+  useEffect(() => {
+    if (data.length) {
+      setSelectedQuestion(data[selectedQuestionIndex]);
+    }
+  }, [data, selectedQuestionIndex]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Card style={{
+      margin: '100px',
+      borderRadius: '8px'
+    }}>
+      <Stack direction={'row'} divider={<Divider orientation="vertical" flexItem />}>
+        <QuestionList selectedQuestion={selectedQuestion} setSelectedQuestion={setSelectedQuestion} />
+        <Stack style={{
+          width: '100%',
+          height: '700px'
+        }}>
+          <Header 
+          selectedQuestion={selectedQuestion}
+          data={data}
+          selectedQuestionIndex={selectedQuestionIndex}
+           />
+          <Divider />
+          <FormArea />
+          <SubmittedAnswer
+          selectedQuestionIndex={selectedQuestionIndex}
+        setSelectedQuestionIndex={setSelectedQuestionIndex}
+        data={data}
+           />
+        </Stack>
+      </Stack>
+    </Card>
   );
 }
 
