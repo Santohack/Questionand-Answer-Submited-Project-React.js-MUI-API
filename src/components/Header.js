@@ -13,8 +13,8 @@ const Header = ({ selectedQuestion, data, selectedQuestionIndex }) => {
       <Stack spacing={12} direction={"row"} justifyContent={"space-between"}>
         <Typography variant="h5" fontSize={"18px"}>
           {" "}
-          {selectedQuestion?.question
-            ? `#3724 - ${selectedQuestion?.question}`
+          {selectedQuestion?.question_name
+            ? `#3724 - ${selectedQuestion?.question_name}`
             : "Please select a question to see"}{" "}
         </Typography>
         <Stack direction={"row"} spacing={2}>

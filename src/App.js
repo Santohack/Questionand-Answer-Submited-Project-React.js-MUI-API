@@ -5,6 +5,7 @@ import FormArea from "./components/FormArea";
 import SubmittedAnswer from "./components/SubmittedAnswer";
 import { useEffect, useState } from "react";
 import { useQuestionList } from "./apis/useFetchQuestionList";
+import AlertCard from "./components/Question";
 
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
         <QuestionList selectedQuestion={selectedQuestion} setSelectedQuestion={setSelectedQuestion} />
         <Stack style={{
           width: '100%',
-          height: '700px'
+          height: '750px'
         }}>
           <Header 
           selectedQuestion={selectedQuestion}
@@ -35,6 +36,7 @@ function App() {
           selectedQuestionIndex={selectedQuestionIndex}
            />
           <Divider />
+          <AlertCard  selectedQuestion={selectedQuestion} title={selectedQuestion?.question} />
           <FormArea />
           <SubmittedAnswer
           selectedQuestionIndex={selectedQuestionIndex}
