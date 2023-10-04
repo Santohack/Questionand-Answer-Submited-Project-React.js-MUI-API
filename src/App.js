@@ -12,6 +12,38 @@ function App() {
   const { data } = useQuestionList();
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
+  const [submittedAnswer, setSubmittedAnswer] = useState("");
+  const [answerSubmitted, setAnswerSubmitted] = useState(false);
+
+  const handleAnswerSubmit = async () => {
+    try {
+      const response = await fetch(
+        `https://api.visionlanguageexperts.in/api/store/?question_id=${selectedQuestion.id}&user_id=1&answers=${encodeURIComponent(
+          submittedAnswer
+        )}`,
+        {
+          method: "POST",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+
+      setSubmittedAnswer(submittedAnswer);
+    } catch (error) {
+
+      console.error("Error submitting answer:", error);
+    }
+  };
+  const handleNextClick = () => {
+    if (selectedQuestionIndex < data.length - 1) {
+      setSelectedQuestionIndex(selectedQuestionIndex + 1);
+      setSubmittedAnswer("");
+      console.log("Next clicked. New index:", selectedQuestionIndex + 1);
+    }
+  };
 
   useEffect(() => {
     if (data.length) {
@@ -30,19 +62,28 @@ function App() {
           width: '100%',
           height: '750px'
         }}>
-          <Header 
-          selectedQuestion={selectedQuestion}
-          data={data}
-          selectedQuestionIndex={selectedQuestionIndex}
-           />
+          <Header
+            selectedQuestion={selectedQuestion}
+            data={data}
+            selectedQuestionIndex={selectedQuestionIndex}
+          />
           <Divider />
-          <AlertCard  selectedQuestion={selectedQuestion} title={selectedQuestion?.question} />
-          <FormArea />
+          <AlertCard selectedQuestion={selectedQuestion} title={selectedQuestion?.question} />
+          <FormArea submittedAnswer={submittedAnswer}
+            setSubmittedAnswer={setSubmittedAnswer} />
           <SubmittedAnswer
-          selectedQuestionIndex={selectedQuestionIndex}
-        setSelectedQuestionIndex={setSelectedQuestionIndex}
-        data={data}
-           />
+            handleNextClick={handleNextClick}
+            answerSubmitted={answerSubmitted}
+            setAnswerSubmitted={setAnswerSubmitted}
+            submittedAnswer={submittedAnswer}
+            setSubmittedAnswer={setSubmittedAnswer}
+            handleAnswerSubmit={handleAnswerSubmit}
+            selectedQuestionIndex={selectedQuestionIndex}
+            setSelectedQuestionIndex={setSelectedQuestionIndex}
+            data={data}
+
+          />
+
         </Stack>
       </Stack>
     </Card>

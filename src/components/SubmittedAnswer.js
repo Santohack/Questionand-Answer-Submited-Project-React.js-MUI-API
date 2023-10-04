@@ -4,9 +4,14 @@ import FastRewindIcon from "@mui/icons-material/FastRewind";
 import { StyledTextField } from "./style";
 
 const SubmittedAnswer = ({
+  answerSubmitted,
+  setAnswerSubmitted,
+  submittedAnswer,
+  setSubmittedAnswer,
+  handleAnswerSubmit,
   selectedQuestionIndex,
+  setSelectedQuestionIndex, handleNextClick,
   data,
-  setSelectedQuestionIndex,
 }) => {
   const ButtonWithIcon = styled(Button)(() => ({
     borderRadius: "16px",
@@ -15,12 +20,7 @@ const SubmittedAnswer = ({
     justifyContent: "center",
   }));
 
-  const handleNextClick = () => {
-    if (selectedQuestionIndex < data.length - 1) {
-      setSelectedQuestionIndex(selectedQuestionIndex + 1);
-      console.log("Next clicked. New index:", selectedQuestionIndex + 1);
-    }
-  };
+
 
   const handlePreviousClick = () => {
     if (selectedQuestionIndex > 0) {
@@ -29,6 +29,14 @@ const SubmittedAnswer = ({
     }
   };
 
+  const handleSubmitClick = async () => {
+    if (submittedAnswer.trim() !== "") {
+      await handleAnswerSubmit();
+
+      setAnswerSubmitted(true);
+    }
+
+  };
   const isPreviousDisabled = selectedQuestionIndex === 0;
 
   const isNextDisabled = selectedQuestionIndex === data.length - 1;
@@ -58,6 +66,8 @@ const SubmittedAnswer = ({
           color="success"
           variant="contained"
           sx={{ marginLeft: "61em" }}
+
+          onClick={handleSubmitClick}
         >
           Submit
         </ButtonWithIcon>
@@ -69,6 +79,7 @@ const SubmittedAnswer = ({
           aria-label="empty textarea"
           minRows={2}
           placeholder="Your Submitted Answser"
+          value={answerSubmitted ? submittedAnswer : ""}
         />
         ;
       </Container>

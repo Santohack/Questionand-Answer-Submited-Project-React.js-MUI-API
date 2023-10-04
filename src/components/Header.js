@@ -1,8 +1,27 @@
 import { Chip, Stack, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { useState, useEffect } from "react";
+
 const Header = ({ selectedQuestion, data, selectedQuestionIndex }) => {
   const currentQuestion = selectedQuestionIndex + 1;
   const totalQuestion = data.length;
+  const [timer, setTimer] = useState(120);
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+
+      setTimer((prevTimer) => prevTimer - 1);
+    }, 1000);
+
+
+    return () => clearInterval(interval);
+  }, [selectedQuestion, selectedQuestionIndex]);
+
+
+  const formattedTimer = `${Math.floor(timer / 60)
+    .toString()
+    .padStart(2, "0")}:${(timer % 60).toString().padStart(2, "0")}`;
 
   return (
     <div
@@ -30,7 +49,7 @@ const Header = ({ selectedQuestion, data, selectedQuestionIndex }) => {
               },
             }}
             icon={<AccessTimeIcon />}
-            label="33:33"
+            label={formattedTimer}
           />
           <Chip
             label={`${currentQuestion}/${totalQuestion}`}
