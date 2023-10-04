@@ -5,18 +5,26 @@ import { useState, useEffect } from "react";
 const Header = ({ selectedQuestion, data, selectedQuestionIndex }) => {
   const currentQuestion = selectedQuestionIndex + 1;
   const totalQuestion = data.length;
-  const [timer, setTimer] = useState(120);
+  const [timer, setTimer] = useState(60); // 2 minutes in seconds (2 * 60)
+  const [timeoutMessage, setTimeoutMessage] = useState(null);
 
-
+ 
   useEffect(() => {
-    const interval = setInterval(() => {
+    let interval;
 
-      setTimer((prevTimer) => prevTimer - 1);
-    }, 1000);
+    if (timer > 0) {
+      interval = setInterval(() => {
+       
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    } else {
+      
+      setTimeoutMessage("Timeout!");
+    }
 
-
+   
     return () => clearInterval(interval);
-  }, [selectedQuestion, selectedQuestionIndex]);
+  }, [selectedQuestion, selectedQuestionIndex, timer]);
 
 
   const formattedTimer = `${Math.floor(timer / 60)
@@ -49,7 +57,7 @@ const Header = ({ selectedQuestion, data, selectedQuestionIndex }) => {
               },
             }}
             icon={<AccessTimeIcon />}
-            label={formattedTimer}
+            label={timeoutMessage || formattedTimer}
           />
           <Chip
             label={`${currentQuestion}/${totalQuestion}`}
