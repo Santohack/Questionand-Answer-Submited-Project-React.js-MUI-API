@@ -5,31 +5,45 @@ import { useState, useEffect } from "react";
 const Header = ({ selectedQuestion, data, selectedQuestionIndex }) => {
   const currentQuestion = selectedQuestionIndex + 1;
   const totalQuestion = data.length;
-  const [timer, setTimer] = useState(60); // 2 minutes in seconds (2 * 60)
-  const [timeoutMessage, setTimeoutMessage] = useState(null);
+  const initialTimerValue = 120; // 2 minutes in seconds (2 * 60)
+  const localStorageKey = "timerValues";
 
- 
+  // Initialize the timer values from localStorage or with initial values
+  const initialTimerValues = JSON.parse(localStorage.getItem(localStorageKey)) || Array(totalQuestion).fill(initialTimerValue);
+  const [timers, setTimers] = useState(initialTimerValues);
+  const [timeoutMessages, setTimeoutMessages] = useState(data.map(() => null));
+
+  // Update the timers for each question individually
   useEffect(() => {
-    let interval;
+    const interval = setInterval(() => {
+      setTimers((prevTimers) =>
+        prevTimers.map((timer, index) =>
+          index === selectedQuestionIndex && timer > 0 ? timer - 1 : timer
+        )
+      );
+    }, 1000);
 
-    if (timer > 0) {
-      interval = setInterval(() => {
-       
-        setTimer((prevTimer) => prevTimer - 1);
-      }, 1000);
+    return () => clearInterval(interval);
+  }, [selectedQuestionIndex, data]);
+
+  // Check if the timers for all questions have reached 0
+  useEffect(() => {
+    const allTimersZero = timers.every((timer) => timer <= 0);
+
+    if (allTimersZero) {
+      setTimeoutMessages(data.map(() => "Timeout!"));
     } else {
-      
-      setTimeoutMessage("Timeout!");
+      setTimeoutMessages(data.map(() => null));
     }
 
-   
-    return () => clearInterval(interval);
-  }, [selectedQuestion, selectedQuestionIndex, timer]);
+    // Store the timers in localStorage
+    localStorage.setItem(localStorageKey, JSON.stringify(timers));
+  }, [timers, data]);
 
-
-  const formattedTimer = `${Math.floor(timer / 60)
+  // Format the timer value as minutes and seconds
+  const formattedTimer = `${Math.floor(timers[selectedQuestionIndex] / 60)
     .toString()
-    .padStart(2, "0")}:${(timer % 60).toString().padStart(2, "0")}`;
+    .padStart(2, "0")}:${(timers[selectedQuestionIndex] % 60).toString().padStart(2, "0")}`;
 
   return (
     <div
@@ -57,7 +71,7 @@ const Header = ({ selectedQuestion, data, selectedQuestionIndex }) => {
               },
             }}
             icon={<AccessTimeIcon />}
-            label={timeoutMessage || formattedTimer}
+            label={timeoutMessages[selectedQuestionIndex] || formattedTimer}
           />
           <Chip
             label={`${currentQuestion}/${totalQuestion}`}
